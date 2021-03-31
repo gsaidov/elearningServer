@@ -1,51 +1,80 @@
 const express = require("express");
+const Course = require("../models/course");
+
 const courseRouter = express.Router();
 
 courseRouter
   .route("/")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
+  .get((req, res, next) => {
+    Course.find()
+      .then((courses) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(courses);
+      })
+      .catch((err) => next(err));
   })
-  .get((req, res) => {
-    res.end("Sending all courses");
-  })
-  .post((req, res) => {
-    res.end(
-      `Will add the course ${req.body.name} with description ${req.body.description}`
-    );
+  .post((req, res, next) => {
+    Course.create(req.body)
+      .then((course) => {
+        console.log("Course created ", course);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(course);
+      })
+      .catch((err) => next(err));
   })
   .put((req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /courses");
   })
-  .delete((req, res) => {
-    res.end("Deleting all courses");
+  .delete((req, res, next) => {
+    Course.deleteMany()
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
+// course/courseId route
 courseRouter
   .route("/:courseId")
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
-    next();
-  })
-  .get((req, res) => {
-    res.end(`Sending the details of the course: ${req.params.courseId}`);
+  .get((req, res, next) => {
+    Course.findById(req.params.courseId)
+      .then((course) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(course);
+      })
+      .catch((err) => next(err));
   })
   .post((req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /course/${req.params.courseId}`);
   })
-  .put((req, res) => {
-    res.write(`Updating the course ${req.params.courseId}\n`);
-    res.end(
-      `Will update the course: ${req.body.name} with description: ${req.body.description}`
-    );
+  .put((req, res, next) => {
+    Course.findByIdAndUpdate(
+      req.params.courseId,
+      { $set: req.body },
+      { new: true }
+    )
+      .then((course) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(course);
+      })
+      .catch((err) => next(err));
   })
-  .delete((req, res) => {
-    res.end(`Deleting course: ${req.params.courseId}`);
+  .delete((req, res, next) => {
+    Course.findByIdAndDelete(req.params.courseId)
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
+      })
+      .catch((err) => next(err));
   });
 
 module.exports = courseRouter;
