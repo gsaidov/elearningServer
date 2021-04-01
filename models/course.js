@@ -23,29 +23,28 @@ const reviewSchema = new Schema(
   }
 );
 
-const syllabusSchema = new Schema({
-  _id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-});
+// const syllabusSchema = new Schema({
+//   id: {
+//     type: Number,
+//     required: true,
+//     unique: true,
+//   },
+//   name: {
+//     type: String,
+//     required: true,
+//   },
+//   description: {
+//     type: String,
+//     required: true,
+//   },
+// });
 
 const courseSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     image: {
       type: String,
@@ -68,7 +67,24 @@ const courseSchema = new Schema(
       type: String,
       required: true,
     },
-    syllabus: [syllabusSchema],
+    // syllabus: [syllabusSchema],
+    syllabus: [
+      {
+        _id: {
+          type: Number,
+          required: true,
+          unique: true,
+        },
+        name: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     reviews: [reviewSchema],
   },
   {
