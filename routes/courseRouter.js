@@ -1,5 +1,6 @@
 const express = require("express");
 const Course = require("../models/course");
+const authenticate = require("../authenticate");
 
 const courseRouter = express.Router();
 
@@ -14,7 +15,7 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Course.create(req.body)
       .then((course) => {
         console.log("Course created ", course);
@@ -24,11 +25,11 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /courses");
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Course.deleteMany()
       .then((response) => {
         res.statusCode = 200;
@@ -50,11 +51,11 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /course/${req.params.courseId}`);
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Course.findByIdAndUpdate(
       req.params.courseId,
       { $set: req.body },
@@ -67,7 +68,7 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Course.findByIdAndDelete(req.params.courseId)
       .then((response) => {
         res.statusCode = 200;
@@ -95,7 +96,7 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Course.findById(req.params.courseId)
       .then((course) => {
         if (course) {
@@ -116,13 +117,13 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(
       `PUT operation not supported on /courses${req.params.courseId}/reviews`
     );
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Course.findById(req.params.courseId)
       .then((course) => {
         if (course) {
@@ -167,13 +168,13 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(
       `POST operation not supported on /courses/${req.params.courseId}/reviews/${req.params.reviewId}`
     );
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Course.findById(req.params.courseId)
       .then((course) => {
         if (course && course.reviews.id(req.params.reviewId)) {
@@ -203,7 +204,7 @@ courseRouter
       })
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Course.findById(req.params.courseId)
       .then((course) => {
         if (course && course.reviews.id(req.params.reviewId)) {
